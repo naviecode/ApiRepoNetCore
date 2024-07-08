@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="UploadTemp\**" />
+    <Content Remove="UploadTemp\**" />
+    <EmbeddedResource Remove="UploadTemp\**" />
+    <None Remove="UploadTemp\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.14" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+	<PackageReference Include="Mapster" Version="7.4.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.2.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Authentication.oAuth" Version="2.2.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+	<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
+		<PrivateAssets>all</PrivateAssets>
+		<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	</PackageReference>
+	<PackageReference Include="WinInsider.System.Net.Http.Formatting" Version="1.0.14" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ShopApi.Common\ShopApi.Common.csproj" />
+    <ProjectReference Include="..\ShopApi.Data\ShopApi.Data.csproj" />
+    <ProjectReference Include="..\ShopApi.Model\ShopApi.Model.csproj" />
+    <ProjectReference Include="..\ShopApi.Service\ShopApi.Service.csproj" />
+    <ProjectReference Include="..\ShopApi.UnitTest\ShopApi.UnitTest.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
+  </ItemGroup>
+
+</Project>

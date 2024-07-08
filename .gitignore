@@ -1,0 +1,36 @@
+# Các thư mục hệ thống và file tạm thời
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# Các file log và file tạm
+*.log
+*.tmp
+*.pid
+
+# Các file build
+*.sln.docstates
+
+# Thư mục publish
+publish/
+
+# Các file khóa
+project.lock.json
+project.fragment.lock.json
+
+# Các file cấu hình tạm thời (có thể tùy chỉnh theo nhu cầu)
+appsettings.Development.json
+launchSettings.json
+
+# Các thư mục và file không cần thiết cho mỗi project
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+**/*.suo
+**/*.log
+**/*.tmp
+**/*.pid
+**/publish/

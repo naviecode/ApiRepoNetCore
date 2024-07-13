@@ -18,16 +18,16 @@ namespace ShopApi.Service.Helpers
             _config = config;
         }
 
-        public async Task Invoke(HttpContext context, IUserService userService)
+        public async Task Invoke(HttpContext context, IServiceManager serviceManager)
         {
             var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
 
             if (token != null)
-                attachUserToContext(context, userService, token);
+                attachUserToContext(context, token, serviceManager);
 
             await _next(context);
         }
-        private void attachUserToContext(HttpContext context, IUserService userService, string token)
+        private void attachUserToContext(HttpContext context, string token, IServiceManager serviceManager)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace ShopApi.Service.Helpers
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 // attach user to context on successful jwt validation
-                context.Items["User"] = userService.GetById(userId);
+                context.Items["User"] = serviceManager.UserService.GetById(userId);
             }
             catch
             {

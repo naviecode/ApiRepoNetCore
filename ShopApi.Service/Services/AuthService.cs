@@ -3,13 +3,13 @@ using Microsoft.IdentityModel.Tokens;
 using ShopApi.Common;
 using ShopApi.Data.Infrastructure;
 using ShopApi.Data.Repositories;
-using ShopApi.Service.Models;
 using ShopApi.Model.Models;
 using ShopApi.Service.Abstractions;
+using ShopApi.Service.Models.AuthDto;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace ShopApi.Service.Services
 {
@@ -18,10 +18,12 @@ namespace ShopApi.Service.Services
         private readonly AppSettings _appSettings;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
-        public AuthService(IOptions<AppSettings> appSettings, IUserRepository userRepository, IUnitOfWork unitOfWork)
+        private readonly IUserTokenRepository _userTokenRepository;
+        public AuthService(IOptions<AppSettings> appSettings, IUserRepository userRepository, IUserTokenRepository userTokensRepository, IUnitOfWork unitOfWork)
         {
             _appSettings = appSettings.Value;
             _userRepository = userRepository;
+            _userTokenRepository = userTokensRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -33,10 +35,58 @@ namespace ShopApi.Service.Services
 
             // authentication successful so generate jwt token
             var token = generateJwtToken(user);
+            var refreshToken = GenerateRefreshToken();
 
-            return new ResponseActionDto<AuthenticateResponse>(new AuthenticateResponse(user, token), CommonConstants.Success, "Đăng nhập thành công", "");
+            //Lưu refresh token
+            //Kiểm tra đã có token dưới db chưa
+            var userToken = _userTokenRepository.GetAll().Where(x => x.UserID == user.ID).FirstOrDefault();
+            if (userToken != null)
+            {
+                // Lưu trữ refresh token refresh db
+                userToken.ValueToken = refreshToken;
+                _userTokenRepository.Update(userToken);
+                _unitOfWork.Commit();
+            }
+            else
+            {
+                _userTokenRepository.Add(new UserTokens() { UserID = user.ID, NameToken = "Refresh Token", ValueToken = refreshToken, LoginProvider = "Web" });
+                _unitOfWork.Commit();
+            }
+            
+            return new ResponseActionDto<AuthenticateResponse>(new AuthenticateResponse(user, token, refreshToken), CommonConstants.Success, "Đăng nhập thành công", "");
         }
 
+
+        public ResponseActionDto<AuthenticateResponse> RefreshToken(RefreshTokenRequest model)
+        {
+            var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+            if (principal == null)
+            {
+                return new ResponseActionDto<AuthenticateResponse>(null, CommonConstants.Error, "Token không hợp lệ", "");
+            }
+
+            var savedRefreshToken = GetRefreshToken(principal); // Lấy refresh token từ cơ sở dữ liệu hoặc bộ nhớ
+            
+            if (savedRefreshToken != model.RefreshToken)
+            {
+                return new ResponseActionDto<AuthenticateResponse>(null, CommonConstants.Error, "Refresh Token không hợp lệ", "");
+            }
+            var idUser = int.Parse(principal.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            var user = _userRepository.GetAll().Where(x => x.ID == idUser).FirstOrDefault();
+            var userToken = _userTokenRepository.GetAll().Where(x => x.UserID == idUser).FirstOrDefault();
+
+            var newAccessToken = generateJwtToken(user);
+            var newRefreshToken = GenerateRefreshToken();
+
+            // Lưu trữ refresh token refresh db
+            userToken.ValueToken = newRefreshToken;
+            _userTokenRepository.Update(userToken);
+            _unitOfWork.Commit();
+
+
+            return new ResponseActionDto<AuthenticateResponse>(new AuthenticateResponse(user, newAccessToken, newRefreshToken), CommonConstants.Success, "Đăng nhập thành công", "");
+
+        }
 
         // helper methods
         private string generateJwtToken(User user)
@@ -54,13 +104,35 @@ namespace ShopApi.Service.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(10),
+                Expires = DateTime.UtcNow.AddMinutes(120),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        private ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret)),
+                ValidateLifetime = false
+            };
 
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+
+            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid token");
+            }
+
+            return principal;
+        }
         private string GenerateRefreshToken()
         {
             var randomNumber = new byte[32];
@@ -69,6 +141,13 @@ namespace ShopApi.Service.Services
                 rng.GetBytes(randomNumber);
                 return Convert.ToBase64String(randomNumber);
             }
+        }
+        private string GetRefreshToken(ClaimsPrincipal user)
+        {
+            // Lấy refresh token từ cơ sở dữ liệu hoặc bộ nhớ dựa trên thông tin người dùng
+            var idUser = int.Parse(user.Claims.FirstOrDefault(c => c.Type == "id")?.Value);
+            var tokenRefresh = _userTokenRepository.GetAll().Where(x=>x.UserID == idUser).FirstOrDefault()?.ValueToken;
+            return tokenRefresh;
         }
     }
 }

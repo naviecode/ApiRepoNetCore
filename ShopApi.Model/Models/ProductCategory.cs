@@ -22,7 +22,7 @@ namespace ShopApi.Model.Models
         [MaxLength(256)]
         public string Alias { get; set; }
         [MaxLength(500)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public int? ParentID { get; set; }
         public int? DisplayOrder { get; set; }
         [MaxLength(256)]

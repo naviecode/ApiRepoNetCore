@@ -3,6 +3,8 @@ using ShopApi.Service.Models;
 using ShopApi.Service.Abstractions;
 using ShopApi.Service.Helpers;
 using ShopApi.Model.Models;
+using ShopApi.Service.Models.UserDto;
+using ShopApi.Service;
 
 namespace WebApiCore.Controllers
 {
@@ -18,31 +20,31 @@ namespace WebApiCore.Controllers
         }
 
         [HttpGet("getAll")]
-        public async Task<ResponseDataDto<User>> Gets()
+        public async Task<ResponseDataDto<UserResponse>> Gets()
         {
             var response = _serviceManager.UserService.GetAll();
             return response;
         }
         [HttpGet("getById")]
-        public async Task<ResponseActionDto<User>> GetById(int id)
+        public async Task<ResponseActionDto<UserResponse>> GetById(int id)
         {
             var response = _serviceManager.UserService.GetById(id);
             return response;
         }
         [HttpPost("create")]
-        public async Task<ResponseActionDto<User>> Create([FromForm] UserFormFile data)
+        public async Task<ResponseActionDto<UserResponse>> Create([FromForm] UserFormFile data)
         {
             var response = _serviceManager.UserService.Add(data);
             return response;
         }
         [HttpPut("update")]
-        public async Task<ResponseActionDto<User>> Update([FromForm] UserFormFile data)
+        public async Task<ResponseActionDto<UserResponse>> Update([FromForm] UserFormFile data)
         {
             var response = _serviceManager.UserService.Update(data);
             return response;
         }
         [HttpDelete("delete")]
-        public async Task<ResponseActionDto<User>> Delete(int id)
+        public async Task<ResponseActionDto<UserResponse>> Delete(int id)
         {
             var response = _serviceManager.UserService.Delete(id);
             return response;

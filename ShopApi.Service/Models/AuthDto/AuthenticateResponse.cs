@@ -1,11 +1,6 @@
 ﻿using ShopApi.Model.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ShopApi.Service.Models
+namespace ShopApi.Service.Models.AuthDto
 {
     public class AuthenticateResponse
     {
@@ -14,15 +9,17 @@ namespace ShopApi.Service.Models
         public string LastName { get; set; }
         public string Username { get; set; }
         public string Token { get; set; }
+        public string RefreshToken { get; set; }
 
 
-        public AuthenticateResponse(User user, string token)
+        public AuthenticateResponse(User user, string token, string refreshToken)
         {
             Id = user.ID;
             FirstName = user.FirstName;
             LastName = user.LastName;
             Username = user.UserName;
             Token = token;
+            RefreshToken = refreshToken;
         }
     }
 }

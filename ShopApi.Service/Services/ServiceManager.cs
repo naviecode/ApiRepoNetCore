@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 using ShopApi.Data.Infrastructure;
 using ShopApi.Data.Repositories;
-using ShopApi.Service.Models;
 using ShopApi.Service.Abstractions;
+using ShopApi.Service.Models.AuthDto;
 
 namespace ShopApi.Service.Services
 {
@@ -14,25 +16,31 @@ namespace ShopApi.Service.Services
         private readonly Lazy<IErrorService> _lazyErrorService;
         private readonly Lazy<IUserService> _lazyUserService;
         private readonly Lazy<IAuthService> _lazyAuthService;
+        private readonly Lazy<IUserContextService> _lazyUserContextService;
         private readonly Lazy<IUploadFileService> _lazyUploadFileService;
 
         public ServiceManager(IPostCategoryRepository postCategoryRepository, 
             IOptions<AppSettings> options,
+            IHttpContextAccessor httpContextAccessor,
             IProductCategoryRepository productCategoryRepository, 
             IProductRepository productRepository,
             IProductTagRepository productTagRepository,
             ITagRepository tagRepository,
             IErrorRepository errorRepository, 
             IUserRepository userRepository,
+            IUserTokenRepository userTokenRepository,
             IUploadFileService uploadFileService,
-            IUnitOfWork unitOfWork) 
+            IUnitOfWork unitOfWork,
+            IUserContextService userContextService,
+            IMapper mapper) 
         {
             _lazyPostCategory = new Lazy<IPostCategoryService>(()=> new PostCategoryService(postCategoryRepository, unitOfWork));
             _lazyPostCategory = new Lazy<IPostCategoryService>(()=> new PostCategoryService(postCategoryRepository, unitOfWork));
-            _lazyProductCategory = new Lazy<IProductCategoryService>(()=> new ProductCategoryService(productCategoryRepository, unitOfWork, uploadFileService));
-            _lazyProductService = new Lazy<IProductService>(() => new ProductService(productRepository, productTagRepository, tagRepository ,unitOfWork, uploadFileService));
-            _lazyUserService = new Lazy<IUserService>(() => new UserService(userRepository, unitOfWork, uploadFileService));
-            _lazyAuthService = new Lazy<IAuthService>(() => new AuthService(options, userRepository, unitOfWork));
+            _lazyProductCategory = new Lazy<IProductCategoryService>(()=> new ProductCategoryService(productCategoryRepository, unitOfWork, uploadFileService, mapper, userContextService));
+            _lazyProductService = new Lazy<IProductService>(() => new ProductService(productRepository, productTagRepository, tagRepository ,unitOfWork, uploadFileService, mapper, userContextService));
+            _lazyUserService = new Lazy<IUserService>(() => new UserService(userRepository, unitOfWork, uploadFileService, mapper));
+            _lazyAuthService = new Lazy<IAuthService>(() => new AuthService(options, userRepository, userTokenRepository, unitOfWork));
+            _lazyUserContextService = new Lazy<IUserContextService>(()=> new UserContextService(httpContextAccessor));
             _lazyErrorService = new Lazy<IErrorService>(()=> new ErrorService(errorRepository, unitOfWork));
             _lazyUploadFileService = new Lazy<IUploadFileService>(() => new UploadFileService());
         }
@@ -43,6 +51,7 @@ namespace ShopApi.Service.Services
         public IErrorService ErrorService => _lazyErrorService.Value;
         public IUserService UserService => _lazyUserService.Value;
         public IAuthService AuthService => _lazyAuthService.Value;
+        public IUserContextService UserContextService => _lazyUserContextService.Value;
         public IUploadFileService UploadFileService => _lazyUploadFileService.Value;
     }
 }

@@ -30,21 +30,8 @@ namespace ShopApi.Service.Services
             {
                 // Cấu hình lưu trữ file trên ggdrive
                 string credentialsPath = @"UploadConfig/credentials.json";
-                string folderId = "17kCNuvfeM2JVN58uy2h6E8Znl82PyCdH";
-                switch (folder)
-                {
-                    case "Product":
-                        folderId = "140xTLh1NXcbr1FOHh5BwvbvsFk1uLahi";
-                        break;
-                    case "ProductCategory":
-                        folderId = "15Ki-CqJrR6mvpzWGTXBzaHhSN01-K34-";
-                        break;
-                    case "User":
-                        folderId = "1w5y2KCTeGRKWc03PVSLaHRxTWsh0B23x";
-                        break;
-                    default:
-                        break;
-                }
+                
+                string folderId = string.IsNullOrEmpty(folder) ? "17kCNuvfeM2JVN58uy2h6E8Znl82PyCdH" : folder;
 
                 //Thông tin file submit
                 string fileName = file.FileName;

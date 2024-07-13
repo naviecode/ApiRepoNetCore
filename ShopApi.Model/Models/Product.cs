@@ -39,7 +39,7 @@ namespace ShopApi.Model.Models
         public int? Warranty { get; set; }
         [MaxLength(500)]
         public string Description { get; set; }
-        public string Content { get; set; }
+        public string? Content { get; set; }
         public bool? HomeFlag { get; set; }
         public bool? HotFlag { get; set; }
         public int? ViewCount { get; set; }

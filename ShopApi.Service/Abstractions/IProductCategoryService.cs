@@ -1,15 +1,16 @@
 ﻿using ShopApi.Model.Models;
-using ShopApi.Service.Models;
+using ShopApi.Service.Models.ProductCategoryDto;
 
 namespace ShopApi.Service.Abstractions
 {
     public interface IProductCategoryService
     {
-        ResponseActionDto<ProductCategory> Add(ProductCategoryFromFile data);
-        ResponseActionDto<ProductCategory> Update(ProductCategoryFromFile data);
-        ResponseActionDto<ProductCategory> Delete(int id);
-        ResponseDataDto<ProductCategory> GetAll();
-        ResponseActionDto<ProductCategory> GetById(int id);
-        //ResponseDataDto<ProductCategory> GetAllByParentId(int parentId);
+        ResponseActionDto<ProductCategoryResponse> Add(ProductCategoryFromFile data);
+        ResponseActionDto<ProductCategoryResponse> Update(ProductCategoryFromFile data);
+        ResponseActionDto<ProductCategoryResponse> Delete(int id);
+        ResponseDataDto<ProductCategoryResponse> GetAll();
+        ResponseDataDto<ProductCategoryResponse> GetProductCategoryCombobox();
+        ResponseActionDto<ProductCategoryResponse> GetById(int id);
+
     }
 }

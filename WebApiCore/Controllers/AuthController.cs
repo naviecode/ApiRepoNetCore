@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShopApi.Service.Models;
+using ShopApi.Service;
 using ShopApi.Service.Abstractions;
+using ShopApi.Service.Models.AuthDto;
 
 namespace WebApiCore.Controllers
 {
@@ -17,6 +18,12 @@ namespace WebApiCore.Controllers
         public async Task<ResponseActionDto<AuthenticateResponse>> Authenticate(AuthenticateRequest model)
         {
             var response = _serviceManager.AuthService.Authenticate(model);
+            return response;
+        }
+        [HttpPost("refreshToken")]
+        public async Task<ResponseActionDto<AuthenticateResponse>> RefreshToken([FromBody]RefreshTokenRequest model)
+        {
+            var response = _serviceManager.AuthService.RefreshToken(model);
             return response;
         }
     }

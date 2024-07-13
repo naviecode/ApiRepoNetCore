@@ -28,6 +28,7 @@ namespace ShopApi.Data
         public DbSet<Error> Errors { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<VisitorStatistic> VisitorStatistics { get; set; }
+        public DbSet<UserTokens> UserTokens { get; set; }
 
         // chuỗi kết nối với tên db sẽ làm  việc đặt là webdb
         public const string ConnectString = @"Data Source=QUANGSON\QUANGSON;Initial Catalog=WebExample;Trusted_Connection=True;Integrated Security=True;TrustServerCertificate=True";

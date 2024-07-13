@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using ShopApi.Model.Models;
-using ShopApi.Service.Models;
+using ShopApi.Service.Models.UserDto;
 
 namespace ShopApi.Service.Helpers
 {
@@ -11,12 +10,12 @@ namespace ShopApi.Service.Helpers
         public void OnAuthorization(AuthorizationFilterContext filterContext)
         {
             var lstItems = filterContext.HttpContext.Items;
-            User? user = null;
+            UserResponse? user = null;
             foreach (var item in lstItems)
             {
                 if(item.Key.ToString() == "User")
                 {
-                    ResponseActionDto<User> responseData =  (ResponseActionDto<User>)item.Value;
+                    ResponseActionDto<UserResponse> responseData =  (ResponseActionDto<UserResponse>)item.Value;
                     user = responseData.Data ?? null;
                   
                 }

@@ -1,12 +1,8 @@
-﻿using Azure;
-using Mapster;
-using MapsterMapper;
-using Microsoft.AspNetCore.Mvc;
-using ShopApi.Service.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using ShopApi.Service;
 using ShopApi.Service.Abstractions;
 using ShopApi.Service.Helpers;
-using WebApiCore.Models;
-using ShopApi.Model.Models;
+using ShopApi.Service.Models.ProductCategoryDto;
 
 namespace ShopApi.Web.Api
 {
@@ -21,31 +17,37 @@ namespace ShopApi.Web.Api
             _serviceManager = serviceManager;
         }
         [HttpGet("getAll")]
-        public async Task<ResponseDataDto<ProductCategory>> Gets()
+        public async Task<ResponseDataDto<ProductCategoryResponse>> Gets()
         {
             var response = _serviceManager.ProductCategoryService.GetAll();
             return response;
         }
+        [HttpGet("getCombobox")]
+        public async Task<ResponseDataDto<ProductCategoryResponse>> GetCombobox()
+        {
+            var response = _serviceManager.ProductCategoryService.GetProductCategoryCombobox();
+            return response;
+        }
         [HttpGet("getById")]
-        public async Task<ResponseActionDto<ProductCategory>> GetById(int id)
+        public async Task<ResponseActionDto<ProductCategoryResponse>> GetById(int id)
         {
             var response = _serviceManager.ProductCategoryService.GetById(id);
             return response;
         }
         [HttpPost("create")]
-        public async Task<ResponseActionDto<ProductCategory>> Create([FromForm]ProductCategoryFromFile data)
+        public async Task<ResponseActionDto<ProductCategoryResponse>> Create([FromForm]ProductCategoryFromFile data)
         {
             var response = _serviceManager.ProductCategoryService.Add(data);
             return response;
         }
         [HttpPut("update")]
-        public async Task<ResponseActionDto<ProductCategory>> Update([FromForm] ProductCategoryFromFile data)
+        public async Task<ResponseActionDto<ProductCategoryResponse>> Update([FromForm] ProductCategoryFromFile data)
         {
             var response = _serviceManager.ProductCategoryService.Update(data);
             return response;
         }
         [HttpDelete("delete")]
-        public async Task<ResponseActionDto<ProductCategory>> Delete(int id)
+        public async Task<ResponseActionDto<ProductCategoryResponse>> Delete(int id)
         {
             var response = _serviceManager.ProductCategoryService.Delete(id);
             return response;

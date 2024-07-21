@@ -19,11 +19,13 @@ namespace ShopApi.Service.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IUserRepository _userRepository;
         private readonly IUserTokenRepository _userTokenRepository;
-        public AuthService(IOptions<AppSettings> appSettings, IUserRepository userRepository, IUserTokenRepository userTokensRepository, IUnitOfWork unitOfWork)
+        private readonly IRoleRepository _roleRepository;
+        public AuthService(IOptions<AppSettings> appSettings, IUserRepository userRepository, IUserTokenRepository userTokensRepository, IRoleRepository roleRepository, IUnitOfWork unitOfWork)
         {
             _appSettings = appSettings.Value;
             _userRepository = userRepository;
             _userTokenRepository = userTokensRepository;
+            _roleRepository = roleRepository;
             _unitOfWork = unitOfWork;
         }
 
@@ -93,13 +95,15 @@ namespace ShopApi.Service.Services
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+            var key = Encoding.ASCII.GetBytes(_appSettings.Key);
+            //Dieu chinh
+            var roleName = _roleRepository.GetSingleById(user.RoleId).Name;
             var claims = new List<Claim>
             {
                 new Claim("id", user.ID.ToString()),
-                new Claim(ClaimTypes.Name, "quangson"),
-                new Claim(ClaimTypes.MobilePhone, "0123456789"),
-                new Claim(ClaimTypes.Role, "admin")
+                new Claim(ClaimTypes.Name, user.UserName),
+                new Claim(ClaimTypes.MobilePhone, user.PhoneNumber),
+                new Claim(ClaimTypes.Role, roleName)
             };
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -117,7 +121,7 @@ namespace ShopApi.Service.Services
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Secret)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_appSettings.Key)),
                 ValidateLifetime = false
             };
 

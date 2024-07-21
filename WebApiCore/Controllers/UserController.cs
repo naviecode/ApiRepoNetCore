@@ -5,6 +5,7 @@ using ShopApi.Service.Helpers;
 using ShopApi.Model.Models;
 using ShopApi.Service.Models.UserDto;
 using ShopApi.Service;
+using ShopApi.Service.Models.Role;
 
 namespace WebApiCore.Controllers
 {
@@ -23,6 +24,12 @@ namespace WebApiCore.Controllers
         public async Task<ResponseDataDto<UserResponse>> Gets()
         {
             var response = _serviceManager.UserService.GetAll();
+            return response;
+        }
+        [HttpPost("getAllFilter")]
+        public async Task<ResponseDataDto<UserResponse>> GetAllFilter(UserRequest filter)
+        {
+            var response = _serviceManager.UserService.GetAllByFilter(filter);
             return response;
         }
         [HttpGet("getById")]
@@ -47,6 +54,18 @@ namespace WebApiCore.Controllers
         public async Task<ResponseActionDto<UserResponse>> Delete(int id)
         {
             var response = _serviceManager.UserService.Delete(id);
+            return response;
+        }
+        [HttpPost("register")]
+        public async Task<ResponseActionDto<UserResponse>> Register(UserRegister data)
+        {
+            var response = _serviceManager.UserService.Register(data);
+            return response;
+        }
+        [HttpPost("changePassword")]
+        public async Task<ResponseActionDto<UserResponse>> ChangePassword(UserRegister data)
+        {
+            var response = _serviceManager.UserService.ChangePassword(data);
             return response;
         }
     }

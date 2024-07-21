@@ -22,6 +22,12 @@ namespace ShopApi.Web.Api
             var response = _serviceManager.ProductCategoryService.GetAll();
             return response;
         }
+        [HttpPost("getAllFilter")]
+        public async Task<ResponseDataDto<ProductCategoryResponse>> GetAllFilter(ProductCategoryRequest filter)
+        {
+            var response = _serviceManager.ProductCategoryService.GetAllByFilter(filter);
+            return response;
+        }
         [HttpGet("getCombobox")]
         public async Task<ResponseDataDto<ProductCategoryResponse>> GetCombobox()
         {

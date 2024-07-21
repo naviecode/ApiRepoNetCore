@@ -1,5 +1,4 @@
-﻿using ShopApi.Model.Models;
-using ShopApi.Service.Models.ProductDto;
+﻿using ShopApi.Service.Models.ProductDto;
 
 namespace ShopApi.Service.Abstractions
 {
@@ -10,6 +9,8 @@ namespace ShopApi.Service.Abstractions
         ResponseActionDto<ProductResponse> Delete(int id);
         ResponseDataDto<ProductResponse> GetAll();
         ResponseActionDto<ProductResponse> GetById(int id);
+        ResponseDataDto<ProductResponse> GetAllByFilter(ProductRequest filter);
+
         //ResponseDataDto<Product> GetAllByParentId(int parentId);
         //IEnumerable<Product> GetAllPaging(int page, int pageSize, out int total);
     }

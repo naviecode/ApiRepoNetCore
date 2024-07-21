@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ShopApi.Model.Abstract;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShopApi.Model.Models
@@ -8,7 +9,7 @@ namespace ShopApi.Model.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int ID { get; set; }
+        public int ID { get; set; }        
         [Required]
         [MaxLength(256)]
         public string FirstName { get; set; }
@@ -26,6 +27,8 @@ namespace ShopApi.Model.Models
         public string? ImageKey { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }
+        public int RoleId { get; set; } = 0;
+
     }
 
 }

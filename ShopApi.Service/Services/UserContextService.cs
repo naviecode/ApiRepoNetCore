@@ -22,22 +22,8 @@ namespace ShopApi.Service.Services
 
         public string GetUserName()
         {
-            var lstItems = _httpContextAccessor.HttpContext.Items;
-            UserResponse? user = null;
-            foreach (var item in lstItems)
-            {
-                if (item.Key.ToString() == "User")
-                {
-                    ResponseActionDto<UserResponse> responseData = (ResponseActionDto<UserResponse>)item.Value;
-                    user = responseData.Data ?? null;
-                }
-            }
-
-            if (user == null)
-            {
-                return "";
-            }
-            return user.UserName.ToString();
+            var userName = _httpContextAccessor.HttpContext.User.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Name).Select(c => c.Value).FirstOrDefault();
+            return userName;
 
         }
 

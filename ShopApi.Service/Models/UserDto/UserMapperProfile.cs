@@ -8,7 +8,12 @@ namespace ShopApi.Service.Models.UserDto
         public UserMapperProfile() 
         {
             CreateMap<User, UserResponse>();
+            CreateMap<User, UserUpdate>();
+            CreateMap<User, UserCreate>();
+            CreateMap<UserUpdate, User>();
+            CreateMap<UserCreate, User>();
             CreateMap<UserResponse, User>();
+            CreateMap<User, User>().ForMember(x => x.ID, opt => opt.Ignore()); ;
         }
     }
 }

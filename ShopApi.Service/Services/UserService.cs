@@ -5,7 +5,9 @@ using ShopApi.Data.Infrastructure;
 using ShopApi.Data.Repositories;
 using ShopApi.Model.Models;
 using ShopApi.Service.Abstractions;
+using ShopApi.Service.Models.ProductCategoryDto;
 using ShopApi.Service.Models.UserDto;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ShopApi.Service.Services
 {
@@ -31,7 +33,14 @@ namespace ShopApi.Service.Services
             int totalItem = data.Count();
             return new ResponseDataDto<UserResponse>(_mapper.Map<List<User>, List<UserResponse>>(data), totalItem);
         }
-
+        public ResponseDataDto<UserResponse> GetAllByFilter(UserRequest filter)
+        {
+            var data = _userRepository.GetAll()
+                .Where(x => (string.IsNullOrEmpty(filter.UserName) || x.UserName.Contains(filter.UserName))
+                ).ToList();
+            int totalItem = data.Count();
+            return new ResponseDataDto<UserResponse>(_mapper.Map<List<User>, List<UserResponse>>(data), totalItem);
+        }
         public ResponseActionDto<UserResponse> GetById(int id)
         {
             var data = _userRepository.GetSingleById(id);
@@ -44,7 +53,7 @@ namespace ShopApi.Service.Services
         public ResponseActionDto<UserResponse> Add(UserFormFile input)
         {
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MissingMemberHandling = MissingMemberHandling.Ignore };
-            var dataConvert = JsonConvert.DeserializeObject<UserResponse>(input.UserData, settings);
+            var dataConvert = JsonConvert.DeserializeObject<UserCreate>(input.UserData, settings);
             IDictionary<int, string> resUpload = new Dictionary<int, string>();
             try
             {
@@ -62,7 +71,7 @@ namespace ShopApi.Service.Services
                     }
                     dataConvert.ImageKey = resUpload.FirstOrDefault().Value;
                 }
-                var resultAdd = _userRepository.Add(_mapper.Map<UserResponse, User>(dataConvert));
+                var resultAdd = _userRepository.Add(_mapper.Map<UserCreate, User>(dataConvert));
                 _unitOfWork.Commit();
                 return new ResponseActionDto<UserResponse>(null, CommonConstants.Success, "Thêm mới thành công", resultAdd.ID.ToString());
 
@@ -76,7 +85,8 @@ namespace ShopApi.Service.Services
         public ResponseActionDto<UserResponse> Update(UserFormFile input)
         {
             var settings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, MissingMemberHandling = MissingMemberHandling.Ignore };
-            var dataConvert = JsonConvert.DeserializeObject<UserResponse>(input.UserData, settings);
+            var dataConvert = JsonConvert.DeserializeObject<UserUpdate>(input.UserData, settings);
+            var userGetById = _userRepository.GetSingleById(dataConvert.ID);
             IDictionary<int, string> resUpload = new Dictionary<int, string>();
             try
             {
@@ -107,7 +117,8 @@ namespace ShopApi.Service.Services
                         dataConvert.ImageKey = resUpload.FirstOrDefault().Value;
                     }
                 }
-                _userRepository.Update(_mapper.Map<UserResponse, User>(dataConvert));
+                dataConvert.Password = userGetById.Password;
+                _userRepository.Update(_mapper.Map(_mapper.Map<User>(dataConvert), userGetById) );
                 _unitOfWork.Commit();
                 return new ResponseActionDto<UserResponse>(null, CommonConstants.Success, "Cập nhập thành công", dataConvert.ID.ToString());
 
@@ -129,7 +140,7 @@ namespace ShopApi.Service.Services
                 }
                 var data = _userRepository.Delete(id);
                 _unitOfWork.Commit();
-                return new ResponseActionDto<UserResponse>(null, CommonConstants.Success, "Xóa thành công", data.ID.ToString());
+                return new ResponseActionDto<UserResponse>(null, CommonConstants.Success, "Xóa thành công", null);
             }
             catch (Exception ex)
             {
@@ -137,8 +148,61 @@ namespace ShopApi.Service.Services
             }
         }
 
-       
+        public ResponseActionDto<UserResponse> Register(UserRegister register)
+        {
+            try
+            {
+                var user = _userRepository.GetSingleById(register.Id);
+                if(user == null)
+                {
+                    return new ResponseActionDto<UserResponse>(null, CommonConstants.Error, "Không tìm thấy người dùng", "");
+                }
+                if(!string.IsNullOrEmpty(user.Password))
+                {
+                    return new ResponseActionDto<UserResponse>(null, CommonConstants.Error, "Tài khoản đã được đăng ý", "");
 
-       
+                }
+
+                user.Password = register.PassWord;
+
+                _userRepository.Update(user);
+                _unitOfWork.Commit();
+
+                return new ResponseActionDto<UserResponse>(null, CommonConstants.Success, "Đăng ký thành công","");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseActionDto<UserResponse>(null, CommonConstants.Error, "Lỗi hệ thống", ex.ToString());
+            }
+        }
+
+        public ResponseActionDto<UserResponse> ChangePassword(UserRegister register)
+        {
+            try
+            {
+                var user = _userRepository.GetSingleById(register.Id);
+                if (user == null)
+                {
+                    return new ResponseActionDto<UserResponse>(null, CommonConstants.Error, "Không tìm thấy người dùng", "");
+                }
+
+                if(user.Password != register.PassWord)
+                {
+                    return new ResponseActionDto<UserResponse>(null, CommonConstants.Error, "Mật khẩu cũ không khớp", "");
+
+                }
+
+                user.Password = register.NewPassword;
+
+                _userRepository.Update(user);
+                _unitOfWork.Commit();
+
+                return new ResponseActionDto<UserResponse>(null, CommonConstants.Success, "Đổi mật khẩu thành công", "");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseActionDto<UserResponse>(null, CommonConstants.Error, "Lỗi hệ thống", ex.ToString());
+            }
+        }
     }
 }

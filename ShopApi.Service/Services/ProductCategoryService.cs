@@ -36,7 +36,15 @@ namespace ShopApi.Service.Services
             int totalItem = data.Count();
             return new ResponseDataDto<ProductCategoryResponse>(_mapper.Map<List<ProductCategory>, List<ProductCategoryResponse>>(data), totalItem);
         }
-
+        public ResponseDataDto<ProductCategoryResponse> GetAllByFilter(ProductCategoryRequest filter)
+        {
+            var data = _productCategoryRepository.GetAll()
+                .Where(x=> (string.IsNullOrEmpty(filter.Name) || x.Name.Contains(filter.Name)) && (filter.Status == null || x.Status == filter.Status)
+                && (filter.FromDate == null || x.CreatedDate > filter.FromDate) && (filter.ToDate == null || x.CreatedDate < filter.ToDate)
+                ).ToList();
+            int totalItem = data.Count();
+            return new ResponseDataDto<ProductCategoryResponse>(_mapper.Map<List<ProductCategory>, List<ProductCategoryResponse>>(data), totalItem);
+        }
         public ResponseActionDto<ProductCategoryResponse> GetById(int id)
         {
             var data = _productCategoryRepository.GetSingleById(id);
@@ -154,5 +162,7 @@ namespace ShopApi.Service.Services
             int totalItem = data.Count();
             return new ResponseDataDto<ProductCategoryResponse>(_mapper.Map<List<ProductCategory>, List<ProductCategoryResponse>>(data), totalItem);
         }
+
+       
     }
 }

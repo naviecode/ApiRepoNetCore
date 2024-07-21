@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShopApi.Data;
 
@@ -11,9 +12,11 @@ using ShopApi.Data;
 namespace ShopApi.Data.Migrations
 {
     [DbContext(typeof(WebShopDbContext))]
-    partial class WebShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240721155417_update_user_db")]
+    partial class update_user_db
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

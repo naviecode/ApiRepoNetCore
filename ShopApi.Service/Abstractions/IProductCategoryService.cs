@@ -9,6 +9,7 @@ namespace ShopApi.Service.Abstractions
         ResponseActionDto<ProductCategoryResponse> Update(ProductCategoryFromFile data);
         ResponseActionDto<ProductCategoryResponse> Delete(int id);
         ResponseDataDto<ProductCategoryResponse> GetAll();
+        ResponseDataDto<ProductCategoryResponse> GetAllByFilter(ProductCategoryRequest filter);
         ResponseDataDto<ProductCategoryResponse> GetProductCategoryCombobox();
         ResponseActionDto<ProductCategoryResponse> GetById(int id);
 

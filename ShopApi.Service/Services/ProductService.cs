@@ -5,6 +5,7 @@ using ShopApi.Data.Infrastructure;
 using ShopApi.Data.Repositories;
 using ShopApi.Model.Models;
 using ShopApi.Service.Abstractions;
+using ShopApi.Service.Models.ProductCategoryDto;
 using ShopApi.Service.Models.ProductDto;
 
 namespace ShopApi.Service.Services
@@ -41,6 +42,15 @@ namespace ShopApi.Service.Services
         public ResponseDataDto<ProductResponse> GetAll()
         {
             var data =  _productRepository.GetAll().ToList();
+            int totalItem = data.Count();
+            return new ResponseDataDto<ProductResponse>(_mapper.Map<List<Product>, List<ProductResponse>>(data), totalItem);
+        }
+        public ResponseDataDto<ProductResponse> GetAllByFilter(ProductRequest filter)
+        {
+            var data = _productRepository.GetAll()
+                .Where(x => (string.IsNullOrEmpty(filter.Name) || x.Name.Contains(filter.Name)) && (filter.Status == null || x.Status == filter.Status)
+                && (filter.FromDate == null || x.CreatedDate > filter.FromDate) && (filter.ToDate == null || x.CreatedDate < filter.ToDate)
+                ).ToList();
             int totalItem = data.Count();
             return new ResponseDataDto<ProductResponse>(_mapper.Map<List<Product>, List<ProductResponse>>(data), totalItem);
         }

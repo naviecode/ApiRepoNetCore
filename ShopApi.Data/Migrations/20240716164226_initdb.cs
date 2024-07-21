@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ShopApi.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class initDb : Migration
+    public partial class initdb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -203,7 +203,7 @@ namespace ShopApi.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     Alias = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     ParentID = table.Column<int>(type: "int", nullable: true),
                     DisplayOrder = table.Column<int>(type: "int", nullable: true),
                     Image = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
@@ -238,7 +238,7 @@ namespace ShopApi.Data.Migrations
                     Promotion = table.Column<double>(type: "float", nullable: true),
                     Warranty = table.Column<int>(type: "int", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Content = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     HomeFlag = table.Column<bool>(type: "bit", nullable: true),
                     HotFlag = table.Column<bool>(type: "bit", nullable: true),
                     ViewCount = table.Column<int>(type: "int", nullable: true),
@@ -266,6 +266,27 @@ namespace ShopApi.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ProductTags", x => new { x.ProductID, x.TagID });
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Roles",
+                columns: table => new
+                {
+                    ID = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    NomalizeName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    MetaKeyWord = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    MetaDesc = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
+                    Status = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Roles", x => x.ID);
                 });
 
             migrationBuilder.CreateTable(
@@ -359,7 +380,8 @@ namespace ShopApi.Data.Migrations
                     ImageName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ImageKey = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RoleID = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -437,6 +459,9 @@ namespace ShopApi.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProductTags");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Slides");

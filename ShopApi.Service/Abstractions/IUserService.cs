@@ -8,6 +8,9 @@ namespace ShopApi.Service.Abstractions
         ResponseActionDto<UserResponse> Update(UserFormFile data);
         ResponseActionDto<UserResponse> Delete(int id);
         ResponseDataDto<UserResponse> GetAll();
+        ResponseDataDto<UserResponse> GetAllByFilter(UserRequest filter);
         ResponseActionDto<UserResponse> GetById(int id);
+        ResponseActionDto<UserResponse> Register(UserRegister register);
+        ResponseActionDto<UserResponse> ChangePassword(UserRegister register);
     }
 }

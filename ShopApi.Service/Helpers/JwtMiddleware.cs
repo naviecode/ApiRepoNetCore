@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using ShopApi.Service.Abstractions;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace ShopApi.Service.Helpers
@@ -25,7 +26,7 @@ namespace ShopApi.Service.Helpers
             if (token != null)
                 attachUserToContext(context, token, serviceManager);
 
-            await _next(context);
+             await _next(context);
         }
         private void attachUserToContext(HttpContext context, string token, IServiceManager serviceManager)
         {
@@ -33,22 +34,30 @@ namespace ShopApi.Service.Helpers
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
                 //var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-                var key = Encoding.ASCII.GetBytes(_config["AppSettings:Secret"]);
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"]);
+                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidIssuer = _config["Jwt:Issuer"],
+                    ValidAudience = _config["Jwt:Audience"],
                     // set clockskew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
-                    ClockSkew = TimeSpan.Zero
+                    ClockSkew = TimeSpan.Zero,
                 }, out SecurityToken validatedToken);
 
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+                var role = jwtToken.Claims.Where(x => x.Type == "role").First().Value;
+
+                //add info user and claim
+                context.User = principal;
 
                 // attach user to context on successful jwt validation
-                context.Items["User"] = serviceManager.UserService.GetById(userId);
+                //context.Items["User"] = serviceManager.UserService.GetById(userId);
+
+                context.Items["User"] = userId;
             }
             catch
             {

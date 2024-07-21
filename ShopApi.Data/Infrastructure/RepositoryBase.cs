@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 //using System.Data.Entity;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ShopApi.Data.Infrastructure
 {
@@ -43,7 +38,7 @@ namespace ShopApi.Data.Infrastructure
         public virtual void Update(T entity)
         {
             dbSet.Attach(entity);
-            dataContext.Entry(entity).State = EntityState.Modified; 
+            dataContext.Entry(entity).State = EntityState.Modified;
         }
 
         public virtual T Delete(T entity)

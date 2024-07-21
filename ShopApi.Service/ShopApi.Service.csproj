@@ -18,4 +18,8 @@
     <ProjectReference Include="..\ShopApi.Model\ShopApi.Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Menu\" />
+  </ItemGroup>
+
 </Project>

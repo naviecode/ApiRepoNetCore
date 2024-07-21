@@ -4,6 +4,7 @@ using ShopApi.Service.Abstractions;
 using ShopApi.Service.Helpers;
 using ShopApi.Service.Models.ProductDto;
 using ShopApi.Service;
+using ShopApi.Service.Models.ProductCategoryDto;
 
 namespace WebApiCore.Controllers
 {
@@ -21,6 +22,12 @@ namespace WebApiCore.Controllers
         public async Task<ResponseDataDto<ProductResponse>> Gets()
         {
             var response = _serviceManager.ProductService.GetAll();
+            return response;
+        }
+        [HttpPost("getAllFilter")]
+        public async Task<ResponseDataDto<ProductResponse>> GetAllFilter(ProductRequest filter)
+        {
+            var response = _serviceManager.ProductService.GetAllByFilter(filter);
             return response;
         }
         [HttpGet("getById")]

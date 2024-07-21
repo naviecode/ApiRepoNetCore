@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ShopApi.Data;
 using ShopApi.Data.Infrastructure;
@@ -10,6 +12,7 @@ using ShopApi.Service.Models.ProductCategoryDto;
 using ShopApi.Service.Models.ProductDto;
 using ShopApi.Service.Models.UserDto;
 using ShopApi.Service.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,14 +31,36 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("Jwt"));
 
 
 // Đăng ký AutoMapper
-//builder.Services.AddScoped<IMapper, Mapper>();
 builder.Services.AddAutoMapper(typeof(ProductMapperProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(ProductCategoryMapperProfile).Assembly);
 builder.Services.AddAutoMapper(typeof(UserMapperProfile).Assembly);
+
+
+//add JWT Bearer Default ASP.NET Core chưa dùng được cách này
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+//{
+//    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+//    {
+//        //yêu cầu có kiểm tra issuer
+//        ValidateIssuer = true,
+//        ValidateAudience = true,
+//        ValidateLifetime = true,
+//        ValidateIssuerSigningKey = true,
+//        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//        ValidAudience = builder.Configuration["Jwt:Audience"],
+//        //chỉ ra token phải cấu hình expire
+//        RequireExpirationTime = true,
+//        //Chi ra key mà sẽ dùng trong token sau này
+//        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+//        RequireSignedTokens = true,
+        
+//    };
+//});
+//builder.Services.AddAuthorization();
 
 
 //Add Services
@@ -50,6 +75,8 @@ builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserTokenRepository, UserTokenRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<IUploadFileService, UploadFileService>();
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IServiceManager, ServiceManager>();
@@ -108,6 +135,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();   // Phuc hoi thong tin dang nhap(xac thuc)
 app.UseAuthorization();   // Phuc hoi thong tin ve quyen cua user
 
+//JwtBear Custom đã dùng được
 app.UseMiddleware<JwtMiddleware>();
 
 app.MapControllers();

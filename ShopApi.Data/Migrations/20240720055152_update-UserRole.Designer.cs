@@ -12,8 +12,8 @@ using ShopApi.Data;
 namespace ShopApi.Data.Migrations
 {
     [DbContext(typeof(WebShopDbContext))]
-    [Migration("20240712183409_initDb")]
-    partial class initDb
+    [Migration("20240720055152_update-UserRole")]
+    partial class updateUserRole
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -439,7 +439,6 @@ namespace ShopApi.Data.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Content")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CreatedBy")
@@ -543,7 +542,6 @@ namespace ShopApi.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
@@ -609,6 +607,57 @@ namespace ShopApi.Data.Migrations
                     b.HasKey("ProductID", "TagID");
 
                     b.ToTable("ProductTags");
+                });
+
+            modelBuilder.Entity("ShopApi.Model.Models.Roles", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MetaDesc")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("MetaKeyWord")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("NomalizeName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("ID");
+
+                    b.ToTable("Roles");
                 });
 
             modelBuilder.Entity("ShopApi.Model.Models.Slide", b =>
@@ -839,6 +888,21 @@ namespace ShopApi.Data.Migrations
                     b.HasKey("ID");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("ShopApi.Model.Models.UserRoles", b =>
+                {
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(2);
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("RoleId", "UserId");
+
+                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("ShopApi.Model.Models.UserTokens", b =>

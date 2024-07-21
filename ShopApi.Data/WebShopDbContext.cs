@@ -4,7 +4,7 @@ using ShopApi.Model.Models;
 
 namespace ShopApi.Data
 {
-    public sealed class WebShopDbContext : DbContext //IdentityDbContext<User>
+    public sealed class WebShopDbContext : DbContext
     {
         public WebShopDbContext(DbContextOptions options) : base(options) 
         {
@@ -29,6 +29,8 @@ namespace ShopApi.Data
         public DbSet<User> Users { get; set; }
         public DbSet<VisitorStatistic> VisitorStatistics { get; set; }
         public DbSet<UserTokens> UserTokens { get; set; }
+        public DbSet<Roles> Roles { get; set; }
+        public DbSet<UserRoles> UserRoles { get; set; }
 
         // chuỗi kết nối với tên db sẽ làm  việc đặt là webdb
         public const string ConnectString = @"Data Source=QUANGSON\QUANGSON;Initial Catalog=WebExample;Trusted_Connection=True;Integrated Security=True;TrustServerCertificate=True";
@@ -37,6 +39,7 @@ namespace ShopApi.Data
         {
             //Comment lại khi chạy unittest
             optionsBuilder.UseSqlServer(ConnectString);
+
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -46,6 +49,8 @@ namespace ShopApi.Data
                   .HasKey(m => new { m.PostID, m.TagID });
             modelBuilder.Entity<ProductTag>()
                  .HasKey(m => new { m.ProductID, m.TagID });
+            modelBuilder.Entity<UserRoles>()
+                 .HasKey(m => new { m.RoleId, m.UserId });
             base.OnModelCreating(modelBuilder);
 
             foreach (var entityType in modelBuilder.Model.GetEntityTypes())

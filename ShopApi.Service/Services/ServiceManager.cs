@@ -15,6 +15,7 @@ namespace ShopApi.Service.Services
         private readonly Lazy<IProductService> _lazyProductService;
         private readonly Lazy<IErrorService> _lazyErrorService;
         private readonly Lazy<IUserService> _lazyUserService;
+        private readonly Lazy<IRoleService> _lazyRoleService;
         private readonly Lazy<IAuthService> _lazyAuthService;
         private readonly Lazy<IUserContextService> _lazyUserContextService;
         private readonly Lazy<IUploadFileService> _lazyUploadFileService;
@@ -29,6 +30,7 @@ namespace ShopApi.Service.Services
             IErrorRepository errorRepository, 
             IUserRepository userRepository,
             IUserTokenRepository userTokenRepository,
+            IRoleRepository roleRepository,
             IUploadFileService uploadFileService,
             IUnitOfWork unitOfWork,
             IUserContextService userContextService,
@@ -39,7 +41,8 @@ namespace ShopApi.Service.Services
             _lazyProductCategory = new Lazy<IProductCategoryService>(()=> new ProductCategoryService(productCategoryRepository, unitOfWork, uploadFileService, mapper, userContextService));
             _lazyProductService = new Lazy<IProductService>(() => new ProductService(productRepository, productTagRepository, tagRepository ,unitOfWork, uploadFileService, mapper, userContextService));
             _lazyUserService = new Lazy<IUserService>(() => new UserService(userRepository, unitOfWork, uploadFileService, mapper));
-            _lazyAuthService = new Lazy<IAuthService>(() => new AuthService(options, userRepository, userTokenRepository, unitOfWork));
+            _lazyRoleService = new Lazy<IRoleService> (() => new RoleService(roleRepository, unitOfWork, mapper, userContextService));
+            _lazyAuthService = new Lazy<IAuthService>(() => new AuthService(options, userRepository, userTokenRepository, roleRepository, unitOfWork));
             _lazyUserContextService = new Lazy<IUserContextService>(()=> new UserContextService(httpContextAccessor));
             _lazyErrorService = new Lazy<IErrorService>(()=> new ErrorService(errorRepository, unitOfWork));
             _lazyUploadFileService = new Lazy<IUploadFileService>(() => new UploadFileService());
@@ -50,6 +53,7 @@ namespace ShopApi.Service.Services
         public IProductService ProductService => _lazyProductService.Value;
         public IErrorService ErrorService => _lazyErrorService.Value;
         public IUserService UserService => _lazyUserService.Value;
+        public IRoleService RoleService => _lazyRoleService.Value;
         public IAuthService AuthService => _lazyAuthService.Value;
         public IUserContextService UserContextService => _lazyUserContextService.Value;
         public IUploadFileService UploadFileService => _lazyUploadFileService.Value;
